@@ -6,7 +6,7 @@
 /*   By: jodos-sa <jodos-sa@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/22 17:44:30 by jodos-sa          #+#    #+#             */
-/*   Updated: 2023/05/05 17:50:02 by jodos-sa         ###   ########.fr       */
+/*   Updated: 2023/05/06 17:22:31 by jodos-sa         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ int	main(int argc, char **argv)
 	prg->cim = 9999;
 	if (argc > 2 && !ft_strcmp(argv[1], "julia"))
 	{
-		if (does_have_letters(argv[2]) && does_have_letters(argv[3]))
+		if (does_have_letters(argv[2]) || does_have_letters(argv[3]))
 		{
 			free(prg);
 			options();
