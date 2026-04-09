@@ -40,6 +40,10 @@ SRC_DIR = src
 INC_DIR = inc
 OBJ_DIR = obj
 
+SRC_BONUS_DIR = src_bonus
+INC_BONUS_DIR = inc_bonus
+OBJ_BONUS_DIR = obj_bonus
+
 NAME	= libftprintf.a
 
 SRC_FILES	= ft_printf.c prints.c utils.c format.c string_utils.c \
@@ -47,6 +51,12 @@ SRC_FILES	= ft_printf.c prints.c utils.c format.c string_utils.c \
 SRC 		= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 OBJ			= $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
 DEP			= $(OBJ:$(OBJ_DIR)/%.o=$(OBJ_DIR)/%.d)
+
+SRC_BONUS_FILES	= ft_printf_bonus.c prints_bonus.c utils_bonus.c format_bonus.c \
+					string_utils_bonus.c prepend_bonus.c flags_bonus.c convert_bonus.c \
+					parser_bonus.c
+SRC_BONUS	= $(addprefix $(SRC_BONUS_DIR)/, $(SRC_BONUS_FILES))
+OBJ_BONUS	= $(SRC_BONUS:$(SRC_BONUS_DIR)/%_bonus.c=$(OBJ_BONUS_DIR)/%_bonus.o)
 
 TESTER 		= tester
 TESTER_SRC	= src/.main.c
@@ -58,9 +68,16 @@ all: $(NAME)
 $(OBJ_DIR):
 	mkdir -p $(OBJ_DIR)
 
+$(OBJ_BONUS_DIR):
+	mkdir -p $(OBJ_BONUS_DIR)
+
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
 	@printf "$(_GONE)$(_BOLD)$(_YELLOW)⚙️  Compiling $< ⚙️ $(_END)"
 	$(CC) $(CFLAGS) -I$(INC_DIR) -c $< -o $@
+
+$(OBJ_BONUS_DIR)/%_bonus.o: $(SRC_BONUS_DIR)/%_bonus.c | $(OBJ_BONUS_DIR)
+	@printf "$(_GONE)$(_BOLD)$(_YELLOW)⚙️  Compiling $< ⚙️ $(_END)"
+	$(CC) $(CFLAGS) -I$(INC_BONUS_DIR) -c $< -o $@
 
 
 ${NAME}: ${OBJ}
@@ -79,12 +96,20 @@ run: test
 	@printf "$(_GONE)$(_BOLD)$(_PURPLE)🚀 Running Tester 🚀$(_END)\n\n"
 	valgrind --leak-check=full ./$(TESTER)
 
+.bonus: ${OBJ_BONUS}
+	@printf "$(_GONE)$(_BOLD)$(_GREEN)⚙️  Compilation completed$(_END) ⚙️ \n"
+	${LIBC} ${NAME} $^
+	@printf "$(_GONE)$(_BOLD)$(_GREEN)📋 Archive \`${NAME}\` created with bonus$(_END)\n"
+	@touch .bonus
+
+bonus: .bonus
+
 clean:
-	${RM} ${OBJ_DIR}
+	${RM} ${OBJ_DIR} ${OBJ_BONUS_DIR}
 	@printf "$(_GONE)$(_BOLD)$(_RED)🗑️  Objects removed$(_END) 🗑️ \n"
 
 fclean: clean
-	${RM} ${NAME} ${TESTER}
+	${RM} ${NAME} ${TESTER} .bonus
 	@printf "$(_GONE)$(_BOLD)$(_RED)🗑️  Archive \`$(NAME)\` removed$(_END) 🗑️ \n"
 	@printf "$(_GONE)$(_BOLD)$(_RED)🗑️  Tester \`$(TESTER)\` removed$(_END) 🗑️ \n"
 
@@ -102,6 +127,6 @@ colors: ## show all the colors
 	@echo "${_CYAN}CYAN${_END}"
 	@echo "${_WHITE}WHITE${_END}"
 
-.PHONY: all clean fclean re test run
+.PHONY: all clean fclean re test run bonus
 
 .SILENT:
